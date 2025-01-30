@@ -1,0 +1,143 @@
+
+.login-container {
+  padding: 40px;
+  max-width: 400px;
+  margin: 100px auto;
+  background: linear-gradient(135deg, #044687, #feb47b); 
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+  animation: fadeIn 1s ease-in; 
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Heading Styling */
+.login-container h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 30px;
+  animation: slideInFromLeft 0.6s ease-out; /* Slide-in animation for heading */
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Form Styling */
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  animation: formFadeIn 1s ease-out; /* Fade-in animation for form */
+}
+
+@keyframes formFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Input Field Styling */
+.login-container input {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  border: 1px solid #bdc3c7;
+  border-radius: 6px;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  background-color: #f5f5f5;
+  animation: inputFocusAnimation 0.5s ease-in-out; /* Input field animation */
+}
+
+/* Input Focus Styling */
+.login-container input:focus {
+  border-color: #3498db;
+  outline: none;
+  background-color: #e8f0fe;
+}
+
+/* Button Styling */
+.login-container button {
+  padding: 14px;
+  background-color: #3498db;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Space between icon and text */
+  animation: buttonClickAnimation 0.6s ease-out; /* Button animation */
+}
+
+/* Button Hover Styling */
+.login-container button:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+/* Button Active State Styling */
+.login-container button:active {
+  transform: translateY(0);
+}
+
+/* Button Click Animation */
+@keyframes buttonClickAnimation {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Background Gradient Animation */
+@keyframes backgroundAnimation {
+  0% {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  }
+  50% {
+    background: linear-gradient(135deg, #ff9f1a, #fbb13c);
+  }
+  100% {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  }
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 20px;
+    max-width: 100%;
+  }
+}
