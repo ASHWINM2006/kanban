@@ -30,7 +30,7 @@ const KanbanBoard = () => {
   const handleAddTask = async () => {
     if (!newTask.trim()) return;
     try {
-      const response = await fetch("http://localhost:5001/Tasks", {
+      const response = await fetch("https://kanban-2-3zoi.onrender.com/Tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: newTask, status: "backlog" }),
@@ -46,7 +46,7 @@ const KanbanBoard = () => {
 
   const handleDeleteTask = async (taskId) => {
     try {
-      await fetch(`http://localhost:5001/Tasks/${taskId}`, { method: "DELETE" });
+      await fetch(`https://kanban-2-3zoi.onrender.com/Tasks/${taskId}`, { method: "DELETE" });
       fetchTasks();
     } catch (error) {
       console.error("Error deleting task:", error);
@@ -56,7 +56,7 @@ const KanbanBoard = () => {
   const handleDrop = async (e, newStatus) => {
     const taskId = e.dataTransfer.getData("taskId");
     try {
-      await fetch(`http://localhost:5001/Tasks/${taskId}`, {
+      await fetch(`https://kanban-2-3zoi.onrender.com/Tasks/${taskId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
