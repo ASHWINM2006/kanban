@@ -1,75 +1,70 @@
 import React, { useState, useEffect } from "react";
 import TaskCard from "./TaskCard";
 import TaskHistory from "./TaskHistory";
-import { addTask, deleteTask, moveTask, addHistory } from "../utils/taskUtils";
 import "./KanbanBoard.css";
 
 const KanbanBoard = () => {
-  const initialTasks = JSON.parse(localStorage.getItem("tasks")) || {
-    backlog: ["Design wireframes", "Research APIs"],
-    todo: ["Build UI components"],
-    inProgress: ["Implement API logic"],
-    done: ["Test API endpoints"],
-  };
-
-  const initialHistory = JSON.parse(localStorage.getItem("history")) || [];
-
-  const [tasks, setTasks] = useState(initialTasks);
-  const [history, setHistory] = useState(initialHistory);
+  const [tasks, setTasks] = useState({ backlog: [], todo: [], inProgress: [], done: [] });
+  const [history, setHistory] = useState([]);
   const [newTask, setNewTask] = useState("");
 
   useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-    localStorage.setItem("history", JSON.stringify(history));
-  }, [tasks, history]);
+    fetchTasks();
+  }, []);
 
-  const handleAddTask = () => {
-    if (!newTask.trim()) return; 
-
-    
-    console.log("Adding task:", newTask);
-
-    const updatedTasks = { ...tasks }; 
-    updatedTasks.backlog.push(newTask); 
-    setTasks(updatedTasks); 
-
- 
-    const updatedHistory = addHistory(history, `Added task "${newTask}" to Backlog`);
-    setHistory(updatedHistory);
-
-    
-    setNewTask("");
+  const fetchTasks = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/Tasks");
+      const data = await response.json();
+      setTasks({
+        backlog: data.filter(task => task.status === "backlog"),
+        todo: data.filter(task => task.status === "todo"),
+        inProgress: data.filter(task => task.status === "inProgress"),
+        done: data.filter(task => task.status === "done"),
+      });
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
   };
 
-  const handleDeleteTask = (task) => {
-    const updatedTasks = deleteTask(tasks, task);
-    setTasks(updatedTasks);
-
-    const updatedHistory = addHistory(history, `Deleted task "${task}"`);
-    setHistory(updatedHistory);
+  const handleAddTask = async () => {
+    if (!newTask.trim()) return;
+    try {
+      const response = await fetch("http://localhost:5001/Tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: newTask, status: "backlog" }),
+      });
+      if (response.ok) {
+        fetchTasks();
+        setNewTask("");
+      }
+    } catch (error) {
+      console.error("Error adding task:", error);
+    }
   };
 
-  const handleDrop = (e, column) => {
-    const task = e.dataTransfer.getData("task");
-    const sourceColumn = e.dataTransfer.getData("sourceColumn");
-
-    const updatedTasks = moveTask(tasks, task, sourceColumn, column);
-    setTasks(updatedTasks);
-
-    const updatedHistory = addHistory(
-      history,
-      `Moved task "${task}" from ${sourceColumn} to ${column}`
-    );
-    setHistory(updatedHistory);
+  const handleDeleteTask = async (taskId) => {
+    try {
+      await fetch(`http://localhost:5001/Tasks/${taskId}`, { method: "DELETE" });
+      fetchTasks();
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
   };
 
-  const handleDragStart = (e, task, column) => {
-    e.dataTransfer.setData("task", task);
-    e.dataTransfer.setData("sourceColumn", column);
-  };
-
-  const handleClearHistory = () => {
-    setHistory([]);
+  const handleDrop = async (e, newStatus) => {
+    const taskId = e.dataTransfer.getData("taskId");
+    try {
+      await fetch(`http://localhost:5001/Tasks/${taskId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      fetchTasks();
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
   };
 
   return (
@@ -96,13 +91,11 @@ const KanbanBoard = () => {
           >
             <h2 className="column-title">{column.charAt(0).toUpperCase() + column.slice(1)}</h2>
             <div className="task-list">
-              {tasks[column].map((task, index) => (
+              {tasks[column].map((task) => (
                 <TaskCard
-                  key={index}
+                  key={task._id}
                   task={task}
-                  column={column}
-                  onDragStart={handleDragStart}
-                  onDelete={handleDeleteTask}
+                  onDelete={() => handleDeleteTask(task._id)}
                 />
               ))}
             </div>
@@ -110,7 +103,7 @@ const KanbanBoard = () => {
         ))}
       </div>
 
-      <TaskHistory history={history} onClearHistory={handleClearHistory} />
+      <TaskHistory history={history} onClearHistory={() => setHistory([])} />
     </div>
   );
 };

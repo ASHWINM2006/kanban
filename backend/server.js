@@ -1,29 +1,28 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv").config();
 
-const authRoutes = require('./routes/authRoutes');
-const taskRoutes = require('./routes/taskRoutes');
-const historyRoutes = require('./routes/historyRoutes');
+
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
+// Middleware
 app.use(cors());
+app.use(express.json()); // Parses JSON body
 
+// Routes
+app.use("/api/auth", require("./routes/authRoutes"));
 
-mongoose.connect(process.env.MONGO_URI || "mongodb+srv://ashwin2006:ashwin@kanbandb.3sxur.mongodb.net/", {
+mongoose.connect("mongodb+srv://ashwinm:ashwin@cluster0.vash0.mongodb.net/", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB Connected'))
-.catch(err => console.error(err));
 
+.then(() => console.log("MongoDB Connected"))
+.catch((err) => console.error("MongoDB Connection Error:", err));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/tasks', taskRoutes);
-app.use('/api/history', historyRoutes);
-
+const PORT = 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+

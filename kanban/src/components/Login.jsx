@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.css'; 
+import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -8,39 +8,63 @@ const Login = () => {
     username: '',
     password: '',
   });
+  const [message, setMessage] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.username && formData.password) {
-      localStorage.setItem('token', 'someRandomToken'); 
-      console.log('Login successful');
-      navigate('/'); 
-    } else {
-      console.log('Invalid credentials');
+    setMessage('');
+
+    console.log('Form Data:', formData); // Debugging line
+
+    try {
+      const response = await fetch('http://localhost:5001/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        setMessage('Login successful! Redirecting...');
+        setTimeout(() => navigate('/kanban'), 2000);
+      } else {
+        setMessage(data.message || 'Invalid credentials');
+      }
+    } catch (error) {
+      setMessage('Server error. Please try again later.');
     }
   };
 
   return (
     <div className="login-container">
-      <h1 className="kanban-heading">Kanban Boarder</h1> 
+      <h1 className="kanban-heading">Kanban Boarder</h1>
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
+          name="username"
           placeholder="Username"
           value={formData.username}
-          onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+          onChange={handleChange}
           required
         />
         <input
           type="password"
+          name="password"
           placeholder="Password"
           value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          onChange={handleChange}
           required
         />
         <button type="submit">Login</button>
       </form>
+      {message && <p className={message.includes('successful') ? 'success' : 'error'}>{message}</p>}
     </div>
   );
 };
