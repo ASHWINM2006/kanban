@@ -14,7 +14,7 @@ app.use(express.json()); // Parses JSON body
 // Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 
-mongoose.connect("mongodb+srv://ashwinm:ashwin@cluster0.vash0.mongodb.net/", {
+mongoose.connect("mongodb+srv://ashwinm:ashwin@cluster0.vash0.mongodb.net", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
